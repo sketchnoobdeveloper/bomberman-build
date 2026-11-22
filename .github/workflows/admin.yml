@@ -1,0 +1,31 @@
+name: admin
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/admin.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: sketchnoobdeveloper/bomberman-admin
+          token: ${{ secrets.SRC_PAT }}
+          path: src
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+        working-directory: src
+      - run: npm run typecheck
+        working-directory: src
+      - run: npm run build
+        working-directory: src
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-dist
+          path: src/dist
