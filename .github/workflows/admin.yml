@@ -29,3 +29,14 @@ jobs:
         with:
           name: admin-dist
           path: src/dist
+      - name: Publish to GitHub Pages /admin
+        run: |
+          rm -rf admin
+          cp -r src/dist admin
+          cp admin/index.html admin/404.html
+          touch admin/.nojekyll
+          git config user.name "bomberman-bot"
+          git config user.email "bot@bomberman.app"
+          git add admin
+          git commit -m "deploy: admin panel $(date -u +%Y%m%dT%H%M%SZ)" || exit 0
+          git push
