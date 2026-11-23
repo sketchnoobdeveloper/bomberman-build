@@ -1,0 +1,31 @@
+name: deploy
+on:
+  workflow_dispatch:
+    inputs:
+      what:
+        description: 'firestore | functions | hosting | all'
+        default: 'all'
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: sketchnoobdeveloper/bomberman-functions, token: '${{ secrets.SRC_PAT }}', path: functions }
+      - uses: actions/checkout@v4
+        with: { repository: sketchnoobdeveloper/bomberman-admin, token: '${{ secrets.SRC_PAT }}', path: admin }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm i -g firebase-tools@13
+      - run: npm ci && npm run build
+        working-directory: functions
+      - run: npm ci && npm run build
+        working-directory: admin
+      - name: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          T="${{ github.event.inputs.what }}"
+          if [ "$T" = "all" ]; then firebase deploy --token "$FIREBASE_TOKEN" --non-interactive; else firebase deploy --token "$FIREBASE_TOKEN" --only "$T" --non-interactive; fi
