@@ -1,26 +1,23 @@
-name: worker
+name: functions
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.github/workflows/worker.yml']
+    paths: ['.github/workflows/functions.yml']
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: sketchnoobdeveloper/bomberman-worker
+          repository: sketchnoobdeveloper/bomberman-functions
           token: ${{ secrets.SRC_PAT }}
           path: src
       - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        with: { node-version: '20' }
       - run: npm ci
         working-directory: src
       - run: npm run typecheck
         working-directory: src
       - run: npm run build
-        working-directory: src
-      - run: docker build -t bomberman-worker:ci .
         working-directory: src
