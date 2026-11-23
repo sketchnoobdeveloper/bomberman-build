@@ -1,0 +1,28 @@
+name: console
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/console.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: sketchnoobdeveloper/bomberman-console
+          token: ${{ secrets.SRC_PAT }}
+          path: src
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - run: gradle :app:assembleDebug :app:assembleRelease
+        working-directory: src
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bomberman-console-apk
+          path: src/app/build/outputs/apk/**/*.apk
