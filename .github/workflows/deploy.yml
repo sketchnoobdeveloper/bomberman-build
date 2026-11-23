@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       what:
-        description: 'firestore | functions | hosting | all'
+        description: 'database | functions | all'
         default: 'all'
 permissions:
   contents: read
@@ -14,15 +14,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with: { repository: sketchnoobdeveloper/bomberman-functions, token: '${{ secrets.SRC_PAT }}', path: functions }
-      - uses: actions/checkout@v4
-        with: { repository: sketchnoobdeveloper/bomberman-admin, token: '${{ secrets.SRC_PAT }}', path: admin }
+      - run: rm -rf admin
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
       - run: npm i -g firebase-tools@13
       - run: npm ci && npm run build
         working-directory: functions
-      - run: npm ci && npm run build
-        working-directory: admin
       - name: deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
